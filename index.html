@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shattered Realms</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- MAIN MENU -->
+  <div id="screen-menu" class="screen active">
+    <div class="menu-container">
+      <h1 class="game-title">SHATTERED REALMS</h1>
+      <p class="game-subtitle">A 2-Player Fantasy Card Battler</p>
+      <div class="menu-buttons">
+        <button class="btn btn-primary" id="btn-singleplayer">Single Player (vs AI)</button>
+        <button class="btn btn-secondary" id="btn-multiplayer">Multiplayer (Hot-Seat)</button>
+        <button class="btn btn-secondary" id="btn-how-to-play">How To Play</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO SELECT -->
+  <div id="screen-hero-select" class="screen">
+    <div class="hero-select-container">
+      <h2 class="hero-select-title" id="hero-select-title">Player 1 &mdash; Choose Your Hero:</h2>
+      <div class="hero-cards-row" id="hero-cards-row">
+        <div class="hero-card" data-hero="warden">
+          <div class="hero-card-inner">
+            <div class="hero-icon warden-icon">&#127807;</div>
+            <h3 class="hero-name">THE WARDEN</h3>
+            <p class="hero-class">Warrior</p>
+            <div class="hero-stats"><span class="hero-hp">&#10084;&#65039; 20 HP</span></div>
+            <p class="hero-win-con">Win by reducing enemy to 0.</p>
+            <p class="hero-theme">Theme: Nature, beasts, resilience.</p>
+            <button class="btn btn-view-deck" data-hero="warden">View Deck</button>
+          </div>
+        </div>
+        <div class="hero-card" data-hero="shadow">
+          <div class="hero-card-inner">
+            <div class="hero-icon shadow-icon">&#127761;</div>
+            <h3 class="hero-name">THE SHADOW</h3>
+            <p class="hero-class">Rogue</p>
+            <div class="hero-stats"><span class="hero-hp">&#10084;&#65039; 20 HP</span></div>
+            <p class="hero-win-con">Win by reducing enemy to 0.</p>
+            <p class="hero-theme">Theme: Assassins, goblins, sacrifice.</p>
+            <button class="btn btn-view-deck" data-hero="shadow">View Deck</button>
+          </div>
+        </div>
+        <div class="hero-card" data-hero="archmage">
+          <div class="hero-card-inner">
+            <div class="hero-icon archmage-icon">&#10024;</div>
+            <h3 class="hero-name">THE ARCHMAGE</h3>
+            <p class="hero-class">Mage</p>
+            <div class="hero-stats"><span class="hero-hp">&#10084;&#65039; 20 HP</span></div>
+            <p class="hero-win-con">Win by reducing enemy to 0 OR gaining 50 Insight.</p>
+            <p class="hero-theme">Theme: Wizards, control, foresight.</p>
+            <button class="btn btn-view-deck" data-hero="archmage">View Deck</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW TO PLAY -->
+  <div id="screen-how-to-play" class="screen">
+    <div class="rules-container">
+      <div class="rules-header">
+        <button class="btn btn-secondary" id="btn-rules-back">&larr; Back</button>
+        <h2 class="rules-title">How To Play</h2>
+      </div>
+      <div class="rules-content">
+
+        <div class="rules-section">
+          <h3>Goal</h3>
+          <p>Reduce your opponent's HP to 0. The Archmage can also win by reaching 50 Insight.</p>
+        </div>
+
+        <div class="rules-section">
+          <h3>Choose a Hero</h3>
+          <p><strong>The Warden</strong> &mdash; Nature and beasts. Resilient minions, buffs, and board control.</p>
+          <p><strong>The Shadow</strong> &mdash; Assassins and goblins. Sacrifice synergies, stealth, and burst damage.</p>
+          <p><strong>The Archmage</strong> &mdash; Wizards and control. Spells, counters, and an alternate win condition via Insight. Unspent mana at the end of your opponent's turn converts to Insight.</p>
+        </div>
+
+        <div class="rules-section">
+          <h3>Turn Structure</h3>
+          <ol>
+            <li><strong>Upkeep</strong> &mdash; Gain +1 max mana (starts at 5), refill mana, untap all minions, trigger Inspire and Regenerate effects.</li>
+            <li><strong>Draft</strong> &mdash; Pick 1 of 3 cards from your personal shop to add to your hand. You may spend 1 mana to reroll the shop. (Skipped for the first player on turn 1.)</li>
+            <li><strong>Action</strong> &mdash; Play cards from your hand and/or initiate combat (once per turn, not on turn 1).</li>
+            <li><strong>End Turn</strong> &mdash; Temporary effects expire. Draw cards up to your hand limit (default 5).</li>
+          </ol>
+        </div>
+
+        <div class="rules-section">
+          <h3>Card Types</h3>
+          <p><strong>Minion</strong> &mdash; A creature with Attack and HP. Enters the battlefield and can attack or block during combat.</p>
+          <p><strong>Instant</strong> &mdash; A spell you can play at any time, including during your opponent's turn. Goes on the stack.</p>
+          <p><strong>Sorcery</strong> &mdash; A spell you can only play during your own Action phase when the stack is empty.</p>
+          <p><strong>Enchantment</strong> &mdash; A persistent effect that stays on the field, providing auras or triggered abilities. Exiled when destroyed.</p>
+          <p><strong>Upgrade</strong> &mdash; A permanent buff attached to a minion, granting stats and/or keywords. Exiled after being played.</p>
+        </div>
+
+        <div class="rules-section">
+          <h3>Combat</h3>
+          <p>Combat works very similarly to Magic: The Gathering. The active player taps minions as attackers, the defender assigns blockers, then damage resolves simultaneously. First Strike, Trample, Deathtouch, Flying, and other familiar keywords work as you'd expect.</p>
+          <p><strong>Key differences from MTG:</strong></p>
+          <ul>
+            <li>Combat is not available on the very first turn of the game.</li>
+            <li>There is no separate main phase after combat &mdash; you return to the same Action phase.</li>
+            <li>Minions do not replenish their health at the start of your next turn.</li>
+          </ul>
+        </div>
+
+        <div class="rules-section">
+          <h3>The Stack &amp; Priority</h3>
+          <p>The stack and priority system works exactly like Magic: The Gathering. When you play a card, your opponent can respond with an Instant, and so on. The stack resolves last-in, first-out. If you have no playable Instants, priority is automatically passed.</p>
+        </div>
+
+        <div class="rules-section">
+          <h3>Tips</h3>
+          <ul>
+            <li>Use the <strong>View Deck</strong> button on the hero select screen to browse all cards before playing.</li>
+            <li>Hover over any card to see a detailed tooltip.</li>
+            <li>Draft strategically &mdash; shop cards are generally more powerful than starter cards.</li>
+            <li>Keep mana open on your opponent's turn if you have Instants to respond with.</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- DECK VIEWER -->
+  <div id="screen-deck-viewer" class="screen">
+    <div class="deck-viewer-container">
+      <div class="deck-viewer-header">
+        <button class="btn btn-secondary" id="btn-deck-back">&larr; Back</button>
+        <h2 class="deck-viewer-title" id="deck-viewer-title">Deck Viewer</h2>
+      </div>
+      <div class="deck-viewer-section">
+        <h3 class="deck-section-label" id="deck-starter-label">Starting Deck (<span id="deck-starter-count">0</span>)</h3>
+        <div class="deck-cards-grid" id="deck-starter-grid"></div>
+      </div>
+      <div class="deck-viewer-section">
+        <h3 class="deck-section-label" id="deck-shop-label">Shop Cards (<span id="deck-shop-count">0</span>)</h3>
+        <div class="deck-cards-grid" id="deck-shop-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div id="screen-game" class="screen">
+
+    <!-- CARD PREVIEW PANEL (left side) -->
+    <div class="card-preview-panel" id="card-preview-panel">
+      <div class="card-preview-image" id="card-preview-image"></div>
+      <div class="card-preview-info" id="card-preview-info">
+        <div class="preview-name" id="preview-name"></div>
+        <div class="preview-type" id="preview-type"></div>
+        <div class="preview-stats" id="preview-stats"></div>
+        <div class="preview-keywords" id="preview-keywords"></div>
+        <div class="preview-effect" id="preview-effect"></div>
+      </div>
+    </div>
+
+    <!-- MAIN GAME AREA -->
+    <div class="game-main-area">
+
+      <!-- OPPONENT BANNER (red) -->
+      <div class="player-banner opponent-banner" id="opponent-banner">
+        <div class="banner-avatar" id="opp-avatar">&#129497;</div>
+        <span class="banner-name" id="opp-hero-label">Opponent</span>
+        <div class="banner-bars">
+          <div class="resource-bar health-bar">
+            <span class="resource-icon">&#10084;&#65039;</span>
+            <div class="bar-track"><div class="bar-fill health-fill" id="opp-health-bar"></div></div>
+            <span class="resource-text" id="opp-health">20</span>
+          </div>
+          <div class="resource-bar mana-bar">
+            <span class="resource-icon">&#128167;</span>
+            <div class="bar-track"><div class="bar-fill mana-fill" id="opp-mana-bar"></div></div>
+            <span class="resource-text"><span id="opp-mana">5</span>/<span id="opp-mana-max">5</span></span>
+          </div>
+          <div class="resource-bar insight-bar hidden" id="opp-insight-block">
+            <span class="resource-icon">&#10024;</span>
+            <div class="bar-track"><div class="bar-fill insight-fill" id="opp-insight-bar"></div></div>
+            <span class="resource-text"><span id="opp-insight">0</span>/50</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- OPPONENT ENCHANTMENTS -->
+      <div class="enchantments-row opponent-enchantments" id="opp-enchantments">
+        <span class="enchant-label">Enchantments:</span>
+        <div class="enchant-cards" id="opp-enchant-cards"></div>
+      </div>
+
+      <!-- OPPONENT HAND (face-down) -->
+      <div class="hand-row opponent-hand" id="opp-hand-row">
+        <span class="hand-label">Opponent's Hand <span id="opp-hand-count-label"></span></span>
+        <div class="hand-row-inner">
+          <div class="pile-box deck-box" id="opp-deck-box" title="Opponent Deck">
+            <span class="pile-box-icon">&#128218;</span>
+            <span class="pile-box-count" id="opp-deck-box-count">0</span>
+            <span class="pile-box-label">DECK</span>
+          </div>
+          <div class="hand-cards hand-cards-centered" id="opp-hand-cards"></div>
+          <div class="pile-box discard-box" id="opp-discard-box" title="Opponent Discard">
+            <div class="pile-box-top-card" id="opp-discard-top-card"></div>
+            <span class="pile-box-count" id="opp-discard-box-count">0</span>
+            <span class="pile-box-label">DISCARD</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- BATTLEFIELD (3D perspective) -->
+      <div class="battlefield-wrapper">
+        <div class="battlefield" id="battlefield">
+          <div class="battlefield-half opponent-side" id="opp-battlefield">
+            <div class="side-label">Opponent Field</div>
+            <div class="minion-row" id="opp-minions"></div>
+          </div>
+          <div class="battlefield-divider"></div>
+          <div class="battlefield-half player-side" id="player-battlefield">
+            <div class="minion-row" id="player-minions"></div>
+            <div class="side-label">Your Field</div>
+          </div>
+          <!-- AI Turn Overlay -->
+          <div class="ai-overlay hidden" id="ai-overlay">
+            <div class="ai-overlay-inner">&#129302; AI is taking its turn...</div>
+          </div>
+        </div>
+      </div>
+      <!-- Card Activation Area / Stack Zone -->
+      <div class="activation-area" id="activation-area">
+        <span class="activation-label">PLAYED</span>
+        <div class="stack-cards" id="stack-cards"></div>
+      </div>
+
+      <!-- Priority Bar -->
+      <div class="priority-bar hidden" id="priority-bar">
+        <span class="priority-msg" id="priority-msg">Respond with an Instant?</span>
+        <div class="priority-timer-track">
+          <div class="priority-timer-fill" id="priority-timer-fill"></div>
+        </div>
+        <span class="priority-timer-text" id="priority-timer-text">15</span>
+        <button class="btn btn-priority-pass" id="btn-priority-pass">Pass</button>
+      </div>
+
+      <!-- PLAYER ENCHANTMENTS -->
+      <div class="enchantments-row player-enchantments" id="player-enchantments">
+        <span class="enchant-label">Enchantments:</span>
+        <div class="enchant-cards" id="player-enchant-cards"></div>
+      </div>
+
+      <!-- FIRST TURN HINT -->
+      <div class="first-turn-hint hidden" id="first-turn-hint">Cannot attack on the first turn</div>
+
+      <!-- PLAYER HAND -->
+      <div class="hand-row player-hand" id="player-hand-row">
+        <span class="hand-label">Your Hand <span id="player-hand-count-label"></span></span>
+        <div class="hand-row-inner">
+          <div class="pile-box discard-box" id="player-discard-box" title="Your Discard">
+            <div class="pile-box-top-card" id="player-discard-top-card"></div>
+            <span class="pile-box-count" id="player-discard-box-count">0</span>
+            <span class="pile-box-label">DISCARD</span>
+          </div>
+          <div class="hand-cards hand-cards-centered" id="player-hand-cards"></div>
+          <div class="pile-box deck-box" id="player-deck-box" title="Your Deck">
+            <span class="pile-box-icon">&#128218;</span>
+            <span class="pile-box-count" id="player-deck-box-count">0</span>
+            <span class="pile-box-label">DECK</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PLAYER BANNER (blue) -->
+      <div class="player-banner self-banner" id="player-banner">
+        <div class="banner-avatar" id="player-avatar">&#129497;</div>
+        <span class="banner-name" id="player-hero-label">You</span>
+        <div class="banner-bars">
+          <div class="resource-bar health-bar">
+            <span class="resource-icon">&#10084;&#65039;</span>
+            <div class="bar-track"><div class="bar-fill health-fill" id="player-health-bar"></div></div>
+            <span class="resource-text" id="player-health">20</span>
+          </div>
+          <div class="resource-bar mana-bar">
+            <span class="resource-icon">&#128167;</span>
+            <div class="bar-track"><div class="bar-fill mana-fill" id="player-mana-bar"></div></div>
+            <span class="resource-text"><span id="player-mana">5</span>/<span id="player-mana-max">5</span></span>
+          </div>
+          <div class="resource-bar insight-bar hidden" id="player-insight-block">
+            <span class="resource-icon">&#10024;</span>
+            <div class="bar-track"><div class="bar-fill insight-fill" id="player-insight-bar"></div></div>
+            <span class="resource-text"><span id="player-insight">0</span>/50</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end .game-main-area -->
+
+    <!-- RIGHT SIDEBAR: controls, log, turn -->
+    <div class="right-sidebar">
+      <div class="phase-turn-bar">
+        <span class="phase-indicator" id="phase-indicator">Action</span>
+        <span class="turn-indicator" id="turn-indicator">Turn 1</span>
+      </div>
+      <div class="controls-section">
+        <div class="controls-area" id="controls-area"></div>
+      </div>
+      <div class="log-section">
+        <div class="log-header">Game Log</div>
+        <div class="log-box" id="log-box"></div>
+      </div>
+      <div class="sfx-controls">
+        <button class="btn-sfx-mute" id="btn-sfx-mute" title="Toggle Sound">&#128264;</button>
+        <input type="range" id="sfx-volume" class="sfx-volume-slider" min="0" max="100" value="50" title="Volume" />
+      </div>
+    </div>
+
+  </div><!-- end #screen-game -->
+
+  <!-- SHOP / DRAFT OVERLAY (shown only during draft phase) -->
+  <div class="shop-overlay hidden" id="shop-overlay">
+    <div class="shop-overlay-inner">
+      <h3 class="shop-title">Draft Phase &mdash; Choose a Card</h3>
+      <p class="shop-subtitle">Pick 1 card to add to your hand. <span id="shop-deck-count"></span></p>
+      <div class="shop-cards-row" id="shop-cards"></div>
+      <div class="shop-actions" id="shop-actions"></div>
+    </div>
+  </div>
+
+  <!-- PASS OVERLAY -->
+  <div class="pass-overlay hidden" id="pass-overlay">
+    <div class="pass-overlay-inner">
+      <p id="pass-overlay-msg">Pass to Player 2</p>
+      <button class="btn btn-primary" id="btn-pass-dismiss">OK, I'm ready</button>
+    </div>
+  </div>
+
+  <!-- GAME OVER OVERLAY -->
+  <div class="gameover-overlay hidden" id="gameover-overlay">
+    <div class="gameover-inner">
+      <h2 id="gameover-title">Game Over</h2>
+      <p id="gameover-msg"></p>
+      <button class="btn btn-primary" id="btn-play-again">Play Again</button>
+    </div>
+  </div>
+
+  <!-- DISCARD VIEWER OVERLAY -->
+  <div class="discard-overlay hidden" id="discard-overlay">
+    <div class="discard-overlay-header" id="discard-overlay-header">Discard Pile</div>
+    <div class="discard-overlay-cards" id="discard-overlay-cards"></div>
+  </div>
+
+  <!-- CARD TOOLTIP -->
+  <div class="card-tooltip hidden" id="card-tooltip"></div>
+
+  <!-- hidden compat elements -->
+  <span id="player-hand-label-count" class="hidden"></span>
+  <span id="opp-hand-label-count" class="hidden"></span>
+  <span id="opp-hand-count" class="hidden"></span>
+
+  <script src="js/cards.js"></script>
+  <script src="js/cards_archmage.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/ui.js"></script>
+</body>
+</html>
