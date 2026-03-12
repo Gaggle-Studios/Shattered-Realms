@@ -16,7 +16,7 @@
 | # | Name | Cost | ATK/HP | Keywords/Effects |
 |---|------|------|--------|-----------------|
 | M001 | Arcane Familiar | 2 | 1/3 | Surge: Gain +1/+0 until end of turn. |
-| M002 | Cloudwisp | 1 | 1/1 | Flying. Battlecry: Scout 1. |
+| M002 | Cloudwisp | 1 | 1/2 | Battlecry: Scout 1. |
 | M003 | Rune Scholar | 3 | 1/4 | Ward 1. Inspire: Gain 1 Insight. |
 | M004 | Spellweaver Initiate | 2 | 2/2 | Surge: Draw a card (once per turn). |
 | M005 | Frost Sentinel | 3 | 0/5 | Defender. Battlecry: Freeze target enemy minion. |
@@ -42,31 +42,31 @@
 | M011 | Apprentice Scribe | 1 | 1/2 | Surge: Scout 1. |
 | M012 | Mana Sprite | 1 | 0/2 | Inspire: Gain 1 Insight. |
 | M013 | Mirror Image | 1 | 0/3 | Defender. Flash. |
-| M014 | Chrono Wisp | 2 | 1/2 | Flying. Battlecry: Freeze target enemy minion. |
+| M014 | Chrono Wisp | 2 | 2/2 | Battlecry: Freeze target enemy minion. |
 | M015 | Arcane Archivist | 2 | 1/3 | Battlecry: Draw a card. Gain 1 Insight. |
-| M016 | Void Moth | 2 | 2/1 | Flying. Stealth. |
-| M017 | Mist Phantom | 2 | 1/3 | Hexproof. Flying. |
+| M016 | Void Moth | 2 | 2/2 | Stealth. |
+| M017 | Mist Phantom | 2 | 2/3 | Hexproof. |
 | M018 | Phase Walker | 2 | 2/2 | Flash. Battlecry: If played during your opponent's turn, gain +1/+1 permanently. |
 | M019 | Echo Mage | 3 | 1/4 | Surge: Copy the next instant you play this turn (you get a second copy added to your hand that costs 0). Once per turn. |
 | M020 | Frost Witch | 3 | 2/3 | Battlecry: Freeze target enemy minion. Inspire: Freeze a random enemy minion. |
 | M021 | Thought Siphon | 3 | 2/3 | Whenever you counter a spell, gain 3 Insight and draw a card. |
-| M022 | Windborne Seer | 3 | 2/2 | Flying. Ward 2. Surge: Gain +0/+1. |
+| M022 | Windborne Seer | 3 | 2/3 | Ward 2. Surge: Gain +0/+1. |
 | M023 | Arcane Sentinel | 3 | 1/5 | Defender. Ward 2. Surge: Deal 1 damage to a random enemy minion. |
-| M024 | Ethereal Scholar | 4 | 2/4 | Flying. Inspire: Gain 2 Insight. Surge: Draw a card (once per turn). |
+| M024 | Ethereal Scholar | 4 | 3/4 | Ward 1. Inspire: Gain 2 Insight. Surge: Draw a card (once per turn). |
 | M025 | Spell Thief | 4 | 2/3 | Flash. Battlecry: Counter target spell. (If not played in response to a spell, the Battlecry does nothing.) |
 | M026 | Temporal Adept | 4 | 3/3 | Battlecry: Return target enemy minion to its owner's hand. Gain Insight equal to that minion's mana cost. |
 | M027 | Void Warden | 4 | 1/6 | Defender. Hexproof. Whenever an enemy minion attacks, Freeze it after combat. |
 | M028 | Arcane Reflector | 5 | 2/5 | Ward 3. Surge: Deal 2 damage to a random enemy minion. |
-| M029 | Chronomancer | 5 | 3/4 | Flying. Battlecry: Take an extra draft this turn (choose from 4 shop cards instead of 3, pick 2). |
-| M030 | Stormcaller | 5 | 3/5 | Flying. Surge: Deal 1 damage to all enemy minions. |
+| M029 | Chronomancer | 5 | 3/5 | Ward 1. Battlecry: Take an extra draft this turn (choose from 4 shop cards instead of 3, pick 2). |
+| M030 | Stormcaller | 5 | 4/5 | Ward 1. Surge: Deal 1 damage to all enemy minions. |
 | M031 | Mindbreaker | 6 | 3/5 | Ward 2. Battlecry: Look at your opponent's hand. Choose a card — they discard it. Gain Insight equal to its mana cost. |
 | M032 | Leyline Guardian | 6 | 2/7 | Defender. Hexproof. Inspire: Gain 3 Insight. All friendly minions gain Ward 1 until end of turn. |
-| M033 | Arcane Sovereign | 7 | 4/6 | Flying. Hexproof. Surge: Gain 2 Insight and draw a card. |
-| M034 | Temporal Dragon | 8 | 5/6 | Flying. Haste. Battlecry: Freeze all enemy minions. |
-| M035 | Infinite Wyrm | 8 | 4/8 | Flying. Ward 3. Inspire: Gain 3 Insight. Surge: Gain +1/+0 permanently and deal 2 damage to a random enemy minion. |
-| M036 | Dreamweaver Sphinx | 9 | 5/7 | Flying. Hexproof. Inspire: Draw a card and gain 2 Insight. Whenever you play an instant, Freeze a random enemy minion. |
-| M037 | Nexus of All Spells | 10 | 3/10 | Flying. Hexproof. Ward 5. Surge: Copy the spell you played (second copy resolves immediately with the same targets if still valid). Inspire: Gain 4 Insight. |
-| M038 | Omniscience Avatar | 12 | 6/12 | Flying. Hexproof. Indestructible. Inspire: Gain 5 Insight, draw 2 cards, and Freeze all enemy minions. This minion enters the battlefield tapped and does not untap during your next Upkeep (2-turn delay). |
+| M033 | Arcane Sovereign | 7 | 4/7 | Hexproof. Ward 1. Surge: Gain 2 Insight and draw a card. |
+| M034 | Temporal Dragon | 8 | 5/8 | Ward 2. Battlecry: Freeze all enemy minions. |
+| M035 | Infinite Wyrm | 8 | 5/8 | Ward 4. Inspire: Gain 3 Insight. Surge: Gain +1/+0 permanently and deal 2 damage to a random enemy minion. |
+| M036 | Dreamweaver Sphinx | 9 | 5/8 | Hexproof. Ward 1. Inspire: Draw a card and gain 2 Insight. Whenever you play an instant, Freeze a random enemy minion. |
+| M037 | Nexus of All Spells | 10 | 4/11 | Hexproof. Ward 5. Surge: Copy the spell you played (second copy resolves immediately with the same targets if still valid). Inspire: Gain 4 Insight. |
+| M038 | Omniscience Avatar | 12 | 7/12 | Hexproof. Indestructible. Inspire: Gain 5 Insight, draw 2 cards, and Freeze all enemy minions. This minion enters the battlefield tapped and does not untap during your next Upkeep (2-turn delay). |
 
 ### Shop Instants (24)
 
@@ -141,14 +141,14 @@
 |---|------|------|--------|
 | M091 | Arcane Infusion | 1 | Give a friendly minion +0/+2 and Ward 1 permanently. |
 | M092 | Icy Enchantment | 2 | Give a friendly minion +1/+1 and "When this minion blocks, Freeze the attacker" permanently. |
-| M093 | Spell-Forged Wings | 2 | Give a friendly minion Flying permanently. If it already has Flying, also give it +1/+2. |
+| M093 | Arcane Amplifier | 2 | Give a friendly minion Ward 2. If it already has Ward, also give it +1/+2. |
 | M094 | Insight Siphon | 3 | Give a friendly minion "Whenever this minion deals combat damage, gain Insight equal to the damage dealt" permanently. |
 | M095 | Hexproof Mantle | 3 | Give a friendly minion Hexproof and +0/+3 permanently. |
 | M096 | Chrono Core | 4 | Give a friendly minion +1/+3, Ward 2, and "Inspire: Gain 2 Insight" permanently. |
 | M097 | Spell Reflection | 4 | Give a friendly minion +1/+2 and "Surge: Deal 1 damage to a random enemy minion" permanently. |
-| M098 | Voidborn Essence | 5 | Give a friendly minion +2/+3, Flying, Hexproof, and Ward 2 permanently. |
+| M098 | Voidborn Essence | 5 | Give a friendly minion +3/+3, Hexproof, and Ward 3 permanently. |
 | M099 | Mind Lattice | 6 | Give a friendly minion +2/+4, "Inspire: Gain 3 Insight and draw a card," and "Surge: Freeze a random enemy minion" permanently. |
-| M100 | Infinity Matrix | 8 | Give a friendly minion +3/+5, Flying, Hexproof, Indestructible, and "Inspire: Gain 5 Insight" permanently. |
+| M100 | Infinity Matrix | 8 | Give a friendly minion +4/+4, Ward 3, Hexproof, and Indestructible permanently. |
 
 ---
 

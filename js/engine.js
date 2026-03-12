@@ -85,6 +85,25 @@ window.Engine = (function () {
     return inst;
   }
 
+  // ── Shop helpers ─────────────────────────────────────────
+  function _drawShopRow(pools) {
+    const row = [];
+    if (pools.minions.length > 0)  row.push(pools.minions.splice(0, 1)[0]);
+    if (pools.spells.length > 0)   row.push(pools.spells.splice(0, 1)[0]);
+    if (pools.upgrades.length > 0) row.push(pools.upgrades.splice(0, 1)[0]);
+    return row;
+  }
+
+  function _returnToPool(pools, card) {
+    if (card.type === 'minion') pools.minions.push(card);
+    else if (card.type === 'upgrade' || card.type === 'curse') pools.upgrades.push(card);
+    else pools.spells.push(card);
+  }
+
+  function _shopPoolsEmpty(pools) {
+    return pools.minions.length === 0 && pools.spells.length === 0 && pools.upgrades.length === 0;
+  }
+
   // ── Build Decks ───────────────────────────────────────────
   function buildDecks(hero) {
     const allDefs = Object.values(window.CARD_DEFS).filter(d => d.hero === hero);
@@ -102,10 +121,14 @@ window.Engine = (function () {
     function makePlayer(idx, hero, decks) {
       // Build draw deck from starter cards
       const drawPile = shuffle(decks.starterIds.map(id => instantiateCard(id, idx)));
-      // Build shop deck from shop cards
-      const shopDeck = shuffle(decks.shopIds.map(id => instantiateCard(id, idx)));
-      // Reveal first 3 shop cards
-      const shopRow = shopDeck.splice(0, 3);
+      // Build shop deck split into 3 category pools
+      const allShopCards = decks.shopIds.map(id => instantiateCard(id, idx));
+      const shopMinions = shuffle(allShopCards.filter(c => c.type === 'minion'));
+      const shopSpells  = shuffle(allShopCards.filter(c => c.type === 'instant' || c.type === 'sorcery' || c.type === 'enchantment'));
+      const shopUpgrades = shuffle(allShopCards.filter(c => c.type === 'upgrade' || c.type === 'curse'));
+      const shopPools = { minions: shopMinions, spells: shopSpells, upgrades: shopUpgrades };
+      // Reveal one card from each category
+      const shopRow = _drawShopRow(shopPools);
       return {
         idx,
         hero,
@@ -115,7 +138,7 @@ window.Engine = (function () {
         hand: [],
         deck: drawPile,
         discard: [],
-        shopDeck,
+        shopPools,
         shopRow,
         maxHandSize: 5,
         enchantments: [],    // active enchantment card instances on the field
@@ -372,9 +395,9 @@ window.Engine = (function () {
 
     // Check phase restrictions
     const isActivePlayer = G.activePlayer === playerIdx;
-    if (card.type === 'sorcery' || card.type === 'enchantment' || card.type === 'upgrade') {
+    if (card.type === 'sorcery' || card.type === 'enchantment' || card.type === 'upgrade' || card.type === 'curse') {
       if (!isActivePlayer || G.phase !== 'action' || G.stack.length > 0) {
-        log(G, 'Can only play sorceries/enchantments/upgrades during your action phase when the stack is empty.');
+        log(G, 'Can only play sorceries/enchantments/upgrades/curses during your action phase when the stack is empty.');
         return false;
       }
     }
@@ -407,7 +430,7 @@ window.Engine = (function () {
     // SFX: mana spend + card type
     if (window.SFX) {
       window.SFX.play('mana_spend');
-      const sfxMap = { minion: 'card_play_minion', instant: 'card_play_instant', sorcery: 'card_play_spell', enchantment: 'card_play_enchantment', upgrade: 'card_play_upgrade' };
+      const sfxMap = { minion: 'card_play_minion', instant: 'card_play_instant', sorcery: 'card_play_spell', enchantment: 'card_play_enchantment', upgrade: 'card_play_upgrade', curse: 'card_play_spell' };
       window.SFX.play(sfxMap[card.type] || 'card_play_spell', { delay: 150 });
     }
     log(G, `${heroName(G, playerIdx)} plays ${card.name} (cost ${cost}).`);
@@ -568,6 +591,34 @@ window.Engine = (function () {
     checkWinConditions(G);
   }
 
+  function playCurse(G, playerIdx, card, targets) {
+    const targetUid = targets && targets[0] ? toUid(targets[0]) : null;
+    const m = targetUid ? getMinion(G, targetUid) : null;
+    if (m && m.owner === playerIdx) {
+      log(G, `${card.name} fizzles — curses can only target enemy minions!`);
+      return;
+    }
+    const def = window.CARD_DEFS[card.defId];
+    if (def && def.onPlay) {
+      def.onPlay(G, card.uid, playerIdx, targets || []);
+    }
+    if (window.SFX) window.SFX.play('silence');
+    // Curses are exiled (removed from game), not discarded
+    checkWinConditions(G);
+  }
+
+  function removeRandomKeyword(G, uid) {
+    uid = toUid(uid);
+    const m = getMinion(G, uid);
+    if (!m) return null;
+    const keys = Object.keys(m.kw).filter(k => m.kw[k]);
+    if (keys.length === 0) return null;
+    const pick = keys[Math.floor(Math.random() * keys.length)];
+    removeKeyword(G, uid, pick);
+    log(G, `${m.name} loses ${pick}!`);
+    return pick;
+  }
+
   // Reapply all recorded upgrades to a minion (used when re-instantiated from scratch)
   function reapplyUpgrades(m) {
     if (!m.upgrades || m.upgrades.length === 0) return;
@@ -625,7 +676,7 @@ window.Engine = (function () {
   function pushToStack(G, type, card, defId, ownerIdx, targets) {
     const entry = {
       id: G.nextStackId++,
-      type,          // 'minion'|'spell'|'enchantment'|'upgrade'
+      type,          // 'minion'|'spell'|'enchantment'|'upgrade'|'curse'
       card,          // card instance
       defId,         // card definition ID
       cardName: card.name,
@@ -739,6 +790,8 @@ window.Engine = (function () {
         playEnchantment(G, playerIdx, card);
       } else if (card.type === 'upgrade') {
         playUpgrade(G, playerIdx, card, targets);
+      } else if (card.type === 'curse') {
+        playCurse(G, playerIdx, card, targets);
       }
     }
 
@@ -985,10 +1038,6 @@ window.Engine = (function () {
         if (!blocker || blocker.owner !== defIdx) continue;
         if (blocker.tapped) continue;
         // Blocking restrictions
-        if (getKwWithAura(G, attacker, 'flying') && !getKwWithAura(G, blocker, 'flying') && !getKwWithAura(G, blocker, 'reach')) {
-          log(G, `${blocker.name} cannot block ${attacker.name} (Flying restriction).`);
-          continue;
-        }
         if (getKwWithAura(G, attacker, 'menace') && blockerUids.length < 2) {
           // Menace: can only be blocked by 2+ minions. Validated later.
         }
@@ -1414,14 +1463,15 @@ window.Engine = (function () {
     if (window.SFX) window.SFX.play('draft_pick');
     log(G, `${heroName(G, playerIdx)} drafts ${card.name} into hand.`);
     p.hand.push(card);
-    // Remove chosen card from shop row, then clear remaining
+    // Remove chosen card from shop row, return remaining to pools
     p.shopRow.splice(cardIdx, 1);
-    p.shopRow = [];
-    // Reveal 3 new shop cards for next draft
-    const newCards = p.shopDeck.splice(0, 3);
-    p.shopRow = newCards;
-    if (p.shopRow.length === 0 && p.shopDeck.length === 0) {
-      log(G, `${heroName(G, playerIdx)}'s shop deck is empty!`);
+    for (const remaining of p.shopRow) {
+      _returnToPool(p.shopPools, remaining);
+    }
+    // Reveal new shop row (one from each category)
+    p.shopRow = _drawShopRow(p.shopPools);
+    if (p.shopRow.length === 0 && _shopPoolsEmpty(p.shopPools)) {
+      log(G, `${heroName(G, playerIdx)}'s shop is empty!`);
     }
     // Transition to action phase
     G.phase = 'action';
@@ -1436,18 +1486,20 @@ window.Engine = (function () {
       log(G, `${heroName(G, playerIdx)} does not have enough mana to reroll.`);
       return false;
     }
-    if (p.shopDeck.length === 0) {
-      log(G, `${heroName(G, playerIdx)}'s shop deck is empty — cannot reroll.`);
+    if (_shopPoolsEmpty(p.shopPools)) {
+      log(G, `${heroName(G, playerIdx)}'s shop is empty — cannot reroll.`);
       return false;
     }
     p.mana.current -= 1;
-    // Return current shop cards to the bottom of the shop deck
+    // Return current shop cards to their pools
     for (const card of p.shopRow) {
-      p.shopDeck.push(card);
+      _returnToPool(p.shopPools, card);
     }
-    // Shuffle and draw 3 new
-    p.shopDeck = shuffle(p.shopDeck);
-    p.shopRow = p.shopDeck.splice(0, Math.min(3, p.shopDeck.length));
+    // Shuffle each pool and draw new row
+    p.shopPools.minions = shuffle(p.shopPools.minions);
+    p.shopPools.spells = shuffle(p.shopPools.spells);
+    p.shopPools.upgrades = shuffle(p.shopPools.upgrades);
+    p.shopRow = _drawShopRow(p.shopPools);
     if (window.SFX) window.SFX.play('shop_reroll');
     log(G, `${heroName(G, playerIdx)} rerolls the shop (1 mana).`);
     if (window.UI && window.UI.onStateChange) window.UI.onStateChange(G);
@@ -1810,9 +1862,8 @@ window.Engine = (function () {
     // Check enchantment auras
     const owner = G.players[m.owner];
     for (const ench of owner.enchantments) {
-      if (ench.defId === 'W080' && keyword === 'reach') return true; // Verdant Canopy
+      if (ench.defId === 'W081' && keyword === 'thorns') return 1;  // Verdant Canopy
       if (ench.defId === 'W082' && keyword === 'thorns') return 1;  // Thorn Barrier
-      if (ench.defId === 'W080' && keyword === 'reach') return true;
       if (ench.defId === 'M080' && keyword === 'ward') return 1;    // Arcane Ward
       if (ench.defId === 'S087' && keyword === 'menace') return true; // Shadow Dominion
     }
@@ -2101,6 +2152,7 @@ window.Engine = (function () {
     giveKeywordTemp,
     removeKeyword,
     silenceMinion,
+    removeRandomKeyword,
     healMinion,
     dealDamage,
     freezeMinion,

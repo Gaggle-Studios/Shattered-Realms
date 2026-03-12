@@ -41,7 +41,7 @@
 | W011 | Mossback Turtle | 1 | 0/4 | Defender. Thorns 1. |
 | W012 | Briarwood Fox | 1 | 1/2 | Haste |
 | W013 | Seedling Dryad | 1 | 0/3 | Inspire: Heal all friendly minions for 1 HP. |
-| W014 | Vinegrasp Creeper | 2 | 1/4 | Defender. Reach. |
+| W014 | Vinegrasp Creeper | 2 | 1/5 | Defender. Thorns 1. |
 | W015 | Amber Lynx | 2 | 2/2 | Stealth. Battlecry: Scout 1. |
 | W016 | Root Snapper | 2 | 2/3 | Regenerate 1 |
 | W017 | Ridgeback Wolf | 2 | 3/2 | — |
@@ -55,7 +55,7 @@
 | W025 | Mistwood Strider | 4 | 3/4 | Trample. Regenerate 1. |
 | W026 | Feral Grizzly | 4 | 4/3 | Frenzy. When this takes damage: also gain +0/+1 permanently. |
 | W027 | Hollowbark Ancient | 4 | 2/6 | Taunt. Thorns 2. |
-| W028 | Canopy Drake | 4 | 3/3 | Flying. Trample. |
+| W028 | Canopy Drake | 4 | 3/4 | Trample. Thorns 2. |
 | W029 | Ironwood Golem | 5 | 3/7 | Defender. Regenerate 2. |
 | W030 | Thundermane Charger | 5 | 4/4 | Trample. Haste. |
 | W031 | Rootmother Dryad | 5 | 2/5 | Inspire: Heal all friendly minions for 2 HP. |
@@ -86,7 +86,7 @@
 | W051 | Verdant Shield | 2 | Give a friendly minion Shield 3. |
 | W052 | Bestial Reflexes | 2 | Target friendly minion gains +2/+2 and Trample until end of turn. |
 | W053 | Regrowth Pulse | 2 | Heal a friendly minion for 4 HP. If that minion has Regenerate, heal for 6 instead. |
-| W054 | Nature's Rebuke | 3 | Deal 4 damage to target minion with Flying. |
+| W054 | Nature's Rebuke | 3 | Deal 4 damage to target minion. |
 | W055 | Thick Hide | 3 | Give a friendly minion +0/+4 permanently and Regenerate 1 permanently. |
 | W056 | Primal Surge | 3 | All friendly minions gain +2/+0 until end of turn. |
 | W057 | Entangling Vines | 3 | Tap all enemy minions with ATK 3 or less. They don't untap during their controller's next Upkeep. |
@@ -106,7 +106,7 @@
 | W066 | Pack Call | 3 | Summon two 2/2 Wolf tokens. |
 | W067 | Hibernate | 3 | Tap a friendly minion. Heal it to full HP. It doesn't untap during your next Upkeep. It gains Shield 3. |
 | W068 | Feral Command | 3 | Give a friendly minion +3/+0 and Trample permanently. |
-| W069 | Return to Earth | 4 | Destroy target minion with Flying. |
+| W069 | Return to Earth | 4 | Destroy target minion with cost 4 or more. |
 | W070 | Verdant Dominion | 4 | Sharpen 1 and Fortify 1 to all friendly minions. |
 | W071 | Summon the Pack | 5 | Summon three 2/2 Wolf tokens with Haste. |
 | W072 | Titanic Growth | 5 | Give a friendly minion +4/+4 permanently. It gains Trample permanently. |
@@ -123,7 +123,7 @@
 | W078 | Fertile Ground | 2 | Inspire (your upkeep): Heal all friendly minions for 1 HP. |
 | W079 | Law of the Jungle | 3 | Whenever a friendly minion destroys an enemy minion in combat, that friendly minion gains +1/+1 permanently. |
 | W080 | Beastmaster's Mark | 3 | All friendly minions with 4 or more ATK have Trample. |
-| W081 | Verdant Canopy | 3 | All friendly minions have Reach. Your minions with Reach gain +1/+0 when blocking a Flying minion. |
+| W081 | Verdant Canopy | 3 | All friendly minions have Thorns 1. When played, give all friendly minions +0/+1. |
 | W082 | Thorn Barrier | 4 | All friendly minions have Thorns 1. |
 | W083 | Nature's Chosen | 4 | Whenever you play a minion, give it +1/+1. If it has Regenerate, give it +2/+2 instead. |
 | W084 | Wildgrowth Aura | 5 | At the start of your Upkeep, give all friendly minions +0/+1 permanently. |

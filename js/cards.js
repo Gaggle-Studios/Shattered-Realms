@@ -133,7 +133,7 @@ CARD_DEFS['W011'] = {
 CARD_DEFS['W012'] = {
   id: 'W012', hero: 'warden', name: 'Briarwood Fox',
   type: 'minion', cost: 1, starter: false, isToken: false,
-  baseAtk: 1, baseHp: 2, kw: { reach: true }, text: 'Reach.',
+  baseAtk: 1, baseHp: 3, kw: { thorns: 1 }, text: 'Thorns 1.',
   battlecry: null, lastBreath: null, inspire: null, rally: null, surge: null, onPlay: null,
 };
 
@@ -152,7 +152,7 @@ CARD_DEFS['W013'] = {
 CARD_DEFS['W014'] = {
   id: 'W014', hero: 'warden', name: 'Vinegrasp Creeper',
   type: 'minion', cost: 2, starter: false, isToken: false,
-  baseAtk: 1, baseHp: 4, kw: { defender: true, reach: true }, text: 'Defender. Reach.',
+  baseAtk: 1, baseHp: 5, kw: { defender: true, thorns: 1 }, text: 'Defender. Thorns 1.',
   battlecry: null, lastBreath: null, inspire: null, rally: null, surge: null, onPlay: null,
 };
 
@@ -270,7 +270,7 @@ CARD_DEFS['W027'] = {
 CARD_DEFS['W028'] = {
   id: 'W028', hero: 'warden', name: 'Canopy Drake',
   type: 'minion', cost: 4, starter: false, isToken: false,
-  baseAtk: 3, baseHp: 3, kw: { flying: true, trample: true }, text: 'Flying. Trample.',
+  baseAtk: 3, baseHp: 4, kw: { trample: true, thorns: 2 }, text: 'Trample. Thorns 2.',
   battlecry: null, lastBreath: null, inspire: null, rally: null, surge: null, onPlay: null,
 };
 
@@ -526,7 +526,7 @@ CARD_DEFS['W053'] = {
 CARD_DEFS['W054'] = {
   id: 'W054', hero: 'warden', name: "Nature's Rebuke",
   type: 'instant', cost: 3, starter: false, isToken: false,
-  kw: {}, text: 'Deal 4 damage to target minion with flying.',
+  kw: {}, text: 'Deal 4 damage to target minion.',
   battlecry: null, lastBreath: null, inspire: null, rally: null, surge: null,
   onPlay: (G, cardId, ownerIdx, targets) => {
     if (targets && targets[0]) window.Engine.dealDamage(G, targets[0], 4, cardId);
@@ -712,10 +712,14 @@ CARD_DEFS['W068'] = {
 CARD_DEFS['W069'] = {
   id: 'W069', hero: 'warden', name: 'Return to Earth',
   type: 'sorcery', cost: 4, starter: false, isToken: false,
-  kw: {}, text: 'Destroy target minion with flying.',
+  kw: {}, text: 'Destroy target minion with cost 4 or more.',
   battlecry: null, lastBreath: null, inspire: null, rally: null, surge: null,
   onPlay: (G, cardId, ownerIdx, targets) => {
-    if (targets && targets[0]) window.Engine.destroyMinion(G, targets[0]);
+    if (targets && targets[0]) {
+      const m = window.Engine.getMinion(G, targets[0]);
+      if (m && (m.cost || 0) >= 4) window.Engine.destroyMinion(G, targets[0]);
+      else window.Engine.log(G, 'Return to Earth fizzles — target costs less than 4.');
+    }
   },
 };
 
@@ -858,9 +862,12 @@ CARD_DEFS['W080'] = {
 CARD_DEFS['W081'] = {
   id: 'W081', hero: 'warden', name: 'Verdant Canopy',
   type: 'enchantment', cost: 3, starter: false, isToken: false,
-  kw: {}, text: 'All friendly minions have reach. Friendly reach minions gain +1/+0 when blocking flying.',
-  specialAbility: 'aura_reachAndBlockBonus',
-  battlecry: null, lastBreath: null, inspire: null, rally: null, surge: null, onPlay: null,
+  kw: {}, text: 'All friendly minions have Thorns 1. When played, give all friendly minions +0/+1.',
+  specialAbility: 'aura_thornsAndHpBonus',
+  battlecry: null, lastBreath: null, inspire: null, rally: null, surge: null,
+  onPlay: (G, cardId, ownerIdx) => {
+    window.Engine.getFriendlyMinions(G, ownerIdx).forEach(m => window.Engine.buffMinion(G, m.uid, 0, 1, true));
+  },
 };
 
 CARD_DEFS['W082'] = {
@@ -1075,6 +1082,92 @@ CARD_DEFS['W100'] = {
     window.Engine.giveKeyword(G, targets[0], 'regenerate', 3);
     window.Engine.giveKeyword(G, targets[0], 'trample', true);
     window.Engine.giveKeyword(G, targets[0], 'piercing', 2);
+  },
+};
+
+// ============================================================
+// WARDEN CURSES
+// ============================================================
+
+CARD_DEFS['W101'] = {
+  id: 'W101', hero: 'warden', name: 'Vine Shackle',
+  type: 'curse', cost: 1, starter: false, isToken: false,
+  kw: {}, text: 'Target enemy minion loses a random keyword and is tapped.',
+  targetType: 'enemy_minion',
+  battlecry: null, lastBreath: null, inspire: null, rally: null, surge: null,
+  onPlay: (G, cardId, ownerIdx, targets) => {
+    if (!targets || !targets[0]) return;
+    window.Engine.removeRandomKeyword(G, targets[0]);
+    window.Engine.tapMinion(G, targets[0]);
+  },
+};
+
+CARD_DEFS['W102'] = {
+  id: 'W102', hero: 'warden', name: 'Briar Hex',
+  type: 'curse', cost: 2, starter: false, isToken: false,
+  kw: {}, text: 'Target enemy minion loses a random keyword. Deal 2 damage to it.',
+  targetType: 'enemy_minion',
+  battlecry: null, lastBreath: null, inspire: null, rally: null, surge: null,
+  onPlay: (G, cardId, ownerIdx, targets) => {
+    if (!targets || !targets[0]) return;
+    window.Engine.removeRandomKeyword(G, targets[0]);
+    window.Engine.dealDamage(G, targets[0], 2, null);
+  },
+};
+
+CARD_DEFS['W103'] = {
+  id: 'W103', hero: 'warden', name: 'Nature\'s Judgement',
+  type: 'curse', cost: 3, starter: false, isToken: false,
+  kw: {}, text: 'Choose a keyword. Target enemy minion loses that keyword. Give a friendly minion +1/+1.',
+  targetType: 'enemy_minion',
+  battlecry: null, lastBreath: null, inspire: null, rally: null, surge: null,
+  onPlay: (G, cardId, ownerIdx, targets) => {
+    if (!targets || !targets[0]) return;
+    // keyword choice is handled by the second target (keyword name stored in targets[1])
+    if (targets[1]) {
+      window.Engine.removeKeyword(G, targets[0], targets[1]);
+      const m = window.Engine.getMinion(G, targets[0]);
+      if (m) window.Engine.log(G, m.name + ' loses ' + targets[1] + '!');
+    } else {
+      window.Engine.removeRandomKeyword(G, targets[0]);
+    }
+    const friendly = window.Engine.getFriendlyMinions(G, ownerIdx);
+    if (friendly.length > 0) {
+      const r = window.Engine.rand(friendly);
+      window.Engine.buffMinion(G, r.uid, 1, 1, true);
+    }
+  },
+};
+
+CARD_DEFS['W104'] = {
+  id: 'W104', hero: 'warden', name: 'Overgrowth Curse',
+  type: 'curse', cost: 4, starter: false, isToken: false,
+  kw: {}, text: 'Target enemy minion loses all keywords. Give it -2/-0.',
+  targetType: 'enemy_minion',
+  battlecry: null, lastBreath: null, inspire: null, rally: null, surge: null,
+  onPlay: (G, cardId, ownerIdx, targets) => {
+    if (!targets || !targets[0]) return;
+    window.Engine.silenceMinion(G, targets[0]);
+    window.Engine.buffMinion(G, targets[0], -2, 0, true);
+  },
+};
+
+CARD_DEFS['W105'] = {
+  id: 'W105', hero: 'warden', name: 'Primal Unraveling',
+  type: 'curse', cost: 5, starter: false, isToken: false,
+  kw: {}, text: 'Target enemy minion loses all keywords. Deal 3 damage to it. Give a random friendly minion +2/+2.',
+  targetType: 'enemy_minion',
+  battlecry: null, lastBreath: null, inspire: null, rally: null, surge: null,
+  onPlay: (G, cardId, ownerIdx, targets) => {
+    if (!targets || !targets[0]) return;
+    window.Engine.silenceMinion(G, targets[0]);
+    window.Engine.dealDamage(G, targets[0], 3, null);
+    const friendly = G.players[ownerIdx].battlefield.filter(m => m.hp > 0);
+    if (friendly.length > 0) {
+      const pick = friendly[Math.floor(Math.random() * friendly.length)];
+      window.Engine.buffMinion(G, pick.uid, 2, 2, true);
+      window.Engine.log(G, pick.name + ' gains +2/+2!');
+    }
   },
 };
 
@@ -2136,5 +2229,83 @@ CARD_DEFS['S100'] = {
     window.Engine.giveKeyword(G, targets[0], 'doubleStrike', true);
     window.Engine.giveKeyword(G, targets[0], 'piercing', 3);
     window.Engine.giveKeyword(G, targets[0], 'deathtouch', true);
+  },
+};
+
+// ============================================================
+// SHADOW CURSES
+// ============================================================
+
+CARD_DEFS['S101'] = {
+  id: 'S101', hero: 'shadow', name: 'Poison Dart',
+  type: 'curse', cost: 1, starter: false, isToken: false,
+  kw: {}, text: 'Target enemy minion loses a random keyword. Deal 1 damage to it.',
+  targetType: 'enemy_minion',
+  battlecry: null, lastBreath: null, inspire: null, rally: null, surge: null,
+  onPlay: (G, cardId, ownerIdx, targets) => {
+    if (!targets || !targets[0]) return;
+    window.Engine.removeRandomKeyword(G, targets[0]);
+    window.Engine.dealDamage(G, targets[0], 1, null);
+  },
+};
+
+CARD_DEFS['S102'] = {
+  id: 'S102', hero: 'shadow', name: 'Hex of Frailty',
+  type: 'curse', cost: 2, starter: false, isToken: false,
+  kw: {}, text: 'Target enemy minion loses a random keyword and gets -1/-1.',
+  targetType: 'enemy_minion',
+  battlecry: null, lastBreath: null, inspire: null, rally: null, surge: null,
+  onPlay: (G, cardId, ownerIdx, targets) => {
+    if (!targets || !targets[0]) return;
+    window.Engine.removeRandomKeyword(G, targets[0]);
+    window.Engine.buffMinion(G, targets[0], -1, -1, true);
+  },
+};
+
+CARD_DEFS['S103'] = {
+  id: 'S103', hero: 'shadow', name: 'Shadow Mark',
+  type: 'curse', cost: 2, starter: false, isToken: false,
+  kw: {}, text: 'Choose a keyword. Target enemy minion loses that keyword. Draw a card.',
+  targetType: 'enemy_minion',
+  battlecry: null, lastBreath: null, inspire: null, rally: null, surge: null,
+  onPlay: (G, cardId, ownerIdx, targets) => {
+    if (!targets || !targets[0]) return;
+    if (targets[1]) {
+      window.Engine.removeKeyword(G, targets[0], targets[1]);
+      const m = window.Engine.getMinion(G, targets[0]);
+      if (m) window.Engine.log(G, m.name + ' loses ' + targets[1] + '!');
+    } else {
+      window.Engine.removeRandomKeyword(G, targets[0]);
+    }
+    window.Engine.drawCards(G, ownerIdx, 1);
+  },
+};
+
+CARD_DEFS['S104'] = {
+  id: 'S104', hero: 'shadow', name: 'Unmaking',
+  type: 'curse', cost: 4, starter: false, isToken: false,
+  kw: {}, text: 'Target enemy minion loses all keywords and gets -2/-2.',
+  targetType: 'enemy_minion',
+  battlecry: null, lastBreath: null, inspire: null, rally: null, surge: null,
+  onPlay: (G, cardId, ownerIdx, targets) => {
+    if (!targets || !targets[0]) return;
+    window.Engine.silenceMinion(G, targets[0]);
+    window.Engine.buffMinion(G, targets[0], -2, -2, true);
+  },
+};
+
+CARD_DEFS['S105'] = {
+  id: 'S105', hero: 'shadow', name: 'Soul Shred',
+  type: 'curse', cost: 5, starter: false, isToken: false,
+  kw: {}, text: 'Target enemy minion loses all keywords. Deal damage to it equal to its attack.',
+  targetType: 'enemy_minion',
+  battlecry: null, lastBreath: null, inspire: null, rally: null, surge: null,
+  onPlay: (G, cardId, ownerIdx, targets) => {
+    if (!targets || !targets[0]) return;
+    const m = window.Engine.getMinion(G, targets[0]);
+    if (!m) return;
+    const atk = window.Engine.getEffectiveAtk(m);
+    window.Engine.silenceMinion(G, targets[0]);
+    if (atk > 0) window.Engine.dealDamage(G, targets[0], atk, null);
   },
 };

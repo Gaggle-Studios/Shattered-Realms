@@ -21,7 +21,6 @@ window.AI = (function () {
     if (kw.trample) score += 2;
 
     if (kw.deathtouch) score += 3;
-    if (kw.flying) score += 2;
     if (kw.taunt) score += 1;
     if (kw.menace) score += 1.5;
     if (kw.doubleStrike || kw.firstStrike) score += 2;
@@ -100,6 +99,14 @@ window.AI = (function () {
       return 5;
     }
 
+    if (card.type === 'curse') {
+      // Curses need an enemy target with keywords to strip
+      if (oppMinions.length === 0) return 0;
+      const withKw = oppMinions.filter(m => Object.keys(m.kw || {}).some(k => m.kw[k]));
+      if (withKw.length === 0) return 2; // still has secondary effects
+      return 6;
+    }
+
     return 3;
   }
 
@@ -120,11 +127,6 @@ window.AI = (function () {
         const tapped = oppMinions.filter(m => m.tapped);
         if (tapped.length === 0) return null;
         return [tapped.sort((a,b) => b.hp - a.hp)[0].uid];
-      }
-      if (card.defId === 'W054') {
-        // Nature's Rebuke: target flying enemy
-        const flying = oppMinions.filter(m => E().getKw(m, 'flying'));
-        return flying.length > 0 ? [flying[0].uid] : null;
       }
       if (oppMinions.length === 0) return null;
       const target = oppMinions.sort((a,b) => b.hp - a.hp)[0];
@@ -153,6 +155,17 @@ window.AI = (function () {
       if (myMinions.length === 0) return null;
       const target = myMinions.sort((a,b) => evalMinion(b) - evalMinion(a))[0];
       return [target.uid];
+    }
+
+    // Curses: target enemy minion with most keywords (prefer high-value targets)
+    if (card.type === 'curse') {
+      if (oppMinions.length === 0) return null;
+      const scored = oppMinions.map(m => {
+        const kwCount = Object.keys(m.kw || {}).filter(k => m.kw[k]).length;
+        return { m, score: kwCount * 3 + evalMinion(m) };
+      });
+      scored.sort((a,b) => b.score - a.score);
+      return [scored[0].m.uid];
     }
 
     // Return to hand: target our own weakest (to redeploy with battlecry, or to save from death)
@@ -186,9 +199,15 @@ window.AI = (function () {
     }
 
     // Destroy spells
-    if (card.defId === 'S063' || card.defId === 'W069') {
+    if (card.defId === 'S063') {
       if (oppMinions.length === 0) return null;
       return [oppMinions.sort((a,b) => evalMinion(b) - evalMinion(a))[0].uid];
+    }
+    if (card.defId === 'W069') {
+      // Return to Earth: only targets minions with cost 4+
+      const expensive = oppMinions.filter(m => (m.cost || 0) >= 4);
+      if (expensive.length === 0) return null;
+      return [expensive.sort((a,b) => evalMinion(b) - evalMinion(a))[0].uid];
     }
 
     // Generic fallback for targeted spells not in specific lists
@@ -389,8 +408,6 @@ window.AI = (function () {
       let bestScore = -999;
 
       const candidateBlockers = available.filter(b => {
-        // Flying restriction
-        if (E().getKw(attacker, 'flying') && !E().getKw(b, 'flying') && !E().getKw(b, 'reach')) return false;
         // Menace: need 2, but we pick 1 at a time (will skip menace for now)
         return true;
       });
@@ -514,7 +531,6 @@ window.AI = (function () {
       threat += (card.baseAtk || 0) * 1.2 + (card.baseHp || 0) * 0.8;
       const kw = card.kw || {};
       if (kw.deathtouch) threat += 4;
-      if (kw.flying) threat += 2;
       if (kw.indestructible) threat += 8;
     }
 

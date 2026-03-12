@@ -34,6 +34,7 @@
 
   /* ── Priority / Stack state ─────────────────────────────────── */
   let _inPriorityWindow = false;
+  let _priorityConfirmed = false;  // true after player clicks YES to respond
   let _priorityResolve  = null;  // resolve fn for requestPriority promise
   let _priorityTimerId  = null;
   let _priorityCountdown = 15;
@@ -50,7 +51,6 @@
 
   /* ── Keyword display map ───────────────────────────────────────── */
   const KW_LABELS = {
-    flying:        '\u{1F98B} Flying',
     trample:       '\u{1F43E} Trample',
     deathtouch:    '\u2620\uFE0F Deathtouch',
     taunt:         '\u{1F6E1}\uFE0F Taunt',
@@ -60,7 +60,6 @@
     doubleStrike:  '\u26A1\u26A1 Double Strike',
     defender:      '\u{1F3F0} Defender',
     vigilance:     '\u{1F441}\uFE0F Vigilance',
-    reach:         '\u{1F3AF} Reach',
     flash:         '\u26A1 Flash',
     hexproof:      '\u{1F52E} Hexproof',
     indestructible:'\u{1F48E} Indestructible',
@@ -73,8 +72,6 @@
 
   /* ── Keyword description map ─────────────────────────────────── */
   const KW_DESC = {
-    flying:        'Can only be blocked by Flying or Reach.',
-    reach:         'Can block Flying minions.',
     taunt:         'Enemies must attack this minion first.',
     menace:        'Must be blocked by 2 or more minions.',
     defender:      'Cannot attack.',
@@ -110,7 +107,6 @@
     { pattern: /\bFreeze\b/i,          label: 'Freeze',          desc: 'Taps the minion and skips its next untap.' },
     { pattern: /\bSilence[ds]?\b/i,    label: 'Silence',         desc: 'Removes all keywords, abilities, and enchantments from a minion.' },
     { pattern: /\bTrample\b/i,         label: 'Trample',         desc: KW_DESC.trample },
-    { pattern: /\bFlying\b/i,          label: 'Flying',          desc: KW_DESC.flying },
     { pattern: /\bTaunt\b/i,           label: 'Taunt',           desc: KW_DESC.taunt },
     { pattern: /\bMenace\b/i,          label: 'Menace',          desc: KW_DESC.menace },
     { pattern: /\bStealth\b/i,         label: 'Stealth',         desc: KW_DESC.stealth },
@@ -118,7 +114,6 @@
     { pattern: /\bFirst Strike\b/i,    label: 'First Strike',    desc: KW_DESC.firstStrike },
     { pattern: /\bDouble Strike\b/i,   label: 'Double Strike',   desc: KW_DESC.doubleStrike },
     { pattern: /\bVigilance\b/i,       label: 'Vigilance',       desc: KW_DESC.vigilance },
-    { pattern: /\bReach\b/i,           label: 'Reach',           desc: KW_DESC.reach },
     { pattern: /\bHexproof\b/i,        label: 'Hexproof',        desc: KW_DESC.hexproof },
     { pattern: /\bIndestructible\b/i,  label: 'Indestructible',  desc: KW_DESC.indestructible },
     { pattern: /\bFrenzy\b/i,          label: 'Frenzy',          desc: KW_DESC.frenzy },
@@ -442,7 +437,8 @@
                        card.type === 'instant' ? '\u26A1' :
                        card.type === 'sorcery' ? '\u{1F52E}' :
                        card.type === 'enchantment' ? '\u{1F4DC}' :
-                       card.type === 'upgrade' ? '\u2B06\uFE0F' : '\u{1F0CF}';
+                       card.type === 'upgrade' ? '\u2B06\uFE0F' :
+                       card.type === 'curse' ? '\u{1F480}' : '\u{1F0CF}';
       imgEl.innerHTML = `<div style="font-size:48px;line-height:1">${typeIcon}</div>
         <div style="font-size:24px;margin-top:4px;color:#888">${heroEmoji}</div>`;
     }
@@ -626,7 +622,8 @@
     setInner('opp-hand-label-count', `[${opp.hand.length}/${opp.maxHandSize}]`);
 
     // Shop deck count
-    setInner('shop-deck-count', `(${p.shopDeck ? p.shopDeck.length : 0} left)`);
+    const poolTotal = p.shopPools ? (p.shopPools.minions.length + p.shopPools.spells.length + p.shopPools.upgrades.length) : 0;
+    setInner('shop-deck-count', `(${poolTotal} left)`);
   }
 
   function setInner(id, val) {
@@ -742,14 +739,18 @@
         cardEl.classList.add('valid-target');
       }
 
-      // Priority mode: highlight playable instants, gray out everything else
+      // Priority mode: gray out all cards before YES; highlight instants after YES
       if (_inPriorityWindow) {
-        const isPlayable = (card.type === 'instant' || Engine.getKw(card, 'flash'))
-                         && effCost <= p.mana.current;
-        if (isPlayable) {
-          cardEl.classList.add('priority-playable');
-        } else {
+        if (!_priorityConfirmed) {
           cardEl.classList.add('priority-disabled');
+        } else {
+          const isPlayable = (card.type === 'instant' || Engine.getKw(card, 'flash'))
+                           && effCost <= p.mana.current;
+          if (isPlayable) {
+            cardEl.classList.add('priority-playable');
+          } else {
+            cardEl.classList.add('priority-disabled');
+          }
         }
       }
 
@@ -942,6 +943,7 @@
   function isBattlefieldTarget(G, minion, sourceCard) {
     if (!sourceCard) return false;
     if (sourceCard.type === 'upgrade') return minion.owner === _humanIdx;
+    if (sourceCard.type === 'curse') return minion.owner !== _humanIdx;
     const tt = getSpellTargetType(sourceCard);
     if (tt === 'friendly_minion') return minion.owner === _humanIdx;
     if (tt === 'enemy_minion') return minion.owner !== _humanIdx;
@@ -982,7 +984,8 @@
       const rerollBtn = document.createElement('button');
       rerollBtn.className = 'btn btn-reroll';
       rerollBtn.textContent = `Reroll (1 mana)`;
-      if (p.mana.current < 1 || p.shopDeck.length === 0) {
+      const poolsEmpty = !p.shopPools || (p.shopPools.minions.length === 0 && p.shopPools.spells.length === 0 && p.shopPools.upgrades.length === 0);
+      if (p.mana.current < 1 || poolsEmpty) {
         rerollBtn.disabled = true;
         rerollBtn.classList.add('btn-disabled');
       }
@@ -1173,6 +1176,7 @@
 
   function cardNeedsTarget(G, card) {
     if (card.type === 'upgrade') return true;
+    if (card.type === 'curse') return true;
     // Minions with targeted battlecry: targeting is deferred to trigger resolution
     if (card.type === 'minion') return false;
     const def = window.CARD_DEFS[card.defId];
@@ -1196,8 +1200,9 @@
   }
 
   function tryPlayCard(G, card, targetUid) {
-    // During priority window: only instants/flash are allowed
+    // During priority window: must confirm YES first, then only instants/flash
     if (_inPriorityWindow) {
+      if (!_priorityConfirmed) return;  // waiting for YES/NO — block all plays
       if (card.type !== 'instant' && !Engine.getKw(card, 'flash')) {
         appendLog('Only Instants and Flash cards can be played now.');
         return;
@@ -1840,11 +1845,11 @@
      DRAG-AND-DROP FROM HAND
   ───────────────────────────────────────────────────────────────── */
   function startDrag(e, G, card, cardEl) {
-    // Allow dragging during priority windows even when AI is running or in combat
+    // During priority: block before YES, allow instants/flash after YES
     if (_inPriorityWindow) {
+      if (!_priorityConfirmed) return;
       if (card.type !== 'instant' && !Engine.getKw(card, 'flash')) return;
       if (_dragState) return;
-      // Continue with drag setup
     } else {
       if (_aiRunning || G.phase === 'gameOver' || G.phase === 'combat' || _dragState) return;
     }
@@ -1965,8 +1970,9 @@
     const p = G.players[_humanIdx];
     const isActive = G.activePlayer === _humanIdx;
 
-    // During a priority window, only instants and flash cards are playable
+    // During a priority window, must confirm YES first, then only instants/flash
     if (_inPriorityWindow) {
+      if (!_priorityConfirmed) return false;  // Phase 1: no plays until YES
       if (card.type !== 'instant' && !Engine.getKw(card, 'flash')) return false;
       const effCost = getEffectiveCost(G, _humanIdx, card);
       return effCost <= p.mana.current;
@@ -2392,22 +2398,26 @@
     // Human player: show priority bar and wait for response
     return new Promise(resolve => {
       _inPriorityWindow = true;
+      _priorityConfirmed = false;   // Phase 1: prompt only, no card interaction
       _priorityResolve = resolve;
       _priorityCountdown = 15;
 
       // Hide AI overlay so human can interact
       hide('ai-overlay');
 
-      // Show priority bar
+      // Show priority bar (Phase 1: YES / NO prompt)
       const bar = $('priority-bar');
       const msgEl = $('priority-msg');
+      const yesBtn = $('btn-priority-yes');
+      const noBtn  = $('btn-priority-no');
+      const timerTrack = $('priority-timer-track');
       const timerText = $('priority-timer-text');
       const timerFill = $('priority-timer-fill');
       const passBtn = $('btn-priority-pass');
 
       if (G.stack.length > 0) {
         const topEntry = G.stack[G.stack.length - 1];
-        msgEl.textContent = `${topEntry.cardName} on the stack — Respond?`;
+        msgEl.textContent = `${topEntry.cardName} on the stack — Respond with an Instant?`;
       } else if (G.phase === 'combat' && G.combatStep === 'declareAttackers') {
         msgEl.textContent = 'Attackers declared. Respond with an Instant?';
       } else if (G.phase === 'combat' && G.combatStep === 'declareBlockers') {
@@ -2418,41 +2428,67 @@
         msgEl.textContent = 'Respond with an Instant?';
       }
 
-      timerText.textContent = '15';
-      timerFill.style.transition = 'none';
-      timerFill.style.width = '100%';
-      // Force reflow then animate
-      timerFill.getBoundingClientRect();
-      timerFill.style.transition = 'width 15s linear';
-      timerFill.style.width = '0%';
+      // Phase 1: show YES/NO, hide timer/pass
+      yesBtn.classList.remove('hidden');
+      noBtn.classList.remove('hidden');
+      timerTrack.classList.add('hidden');
+      timerText.classList.add('hidden');
+      passBtn.classList.add('hidden');
 
       bar.classList.remove('hidden');
-
-      // Re-render hand to show playable instants
-      renderPlayerHand(G);
       renderStack(G);
+      renderPlayerHand(G);   // hand grayed out (not confirmed yet)
 
-      // Pass button handler
-      const onPass = () => {
+      // NO = pass immediately
+      noBtn.onclick = () => {
         cleanupPriority();
         resolve({ action: 'pass' });
       };
-      passBtn.onclick = onPass;
 
-      // Countdown timer
-      _priorityTimerId = setInterval(() => {
-        _priorityCountdown--;
-        timerText.textContent = String(Math.max(0, _priorityCountdown));
-        if (_priorityCountdown <= 0) {
+      // YES = enter Phase 2: enable instant plays + start timer
+      yesBtn.onclick = () => {
+        _priorityConfirmed = true;
+
+        // Swap to Phase 2 UI
+        yesBtn.classList.add('hidden');
+        noBtn.classList.add('hidden');
+        timerTrack.classList.remove('hidden');
+        timerText.classList.remove('hidden');
+        passBtn.classList.remove('hidden');
+        msgEl.textContent = 'Play an Instant or Pass';
+
+        timerText.textContent = '15';
+        timerFill.style.transition = 'none';
+        timerFill.style.width = '100%';
+        timerFill.getBoundingClientRect();
+        timerFill.style.transition = 'width 15s linear';
+        timerFill.style.width = '0%';
+
+        // Re-render hand to highlight playable instants
+        renderPlayerHand(G);
+
+        // Pass button
+        passBtn.onclick = () => {
           cleanupPriority();
           resolve({ action: 'pass' });
-        }
-      }, 1000);
+        };
+
+        // Countdown timer
+        _priorityTimerId = setInterval(() => {
+          _priorityCountdown--;
+          timerText.textContent = String(Math.max(0, _priorityCountdown));
+          if (_priorityCountdown <= 0) {
+            cleanupPriority();
+            resolve({ action: 'pass' });
+          }
+        }, 1000);
+      };
     });
   }
 
   function cleanupPriority() {
     _inPriorityWindow = false;
+    _priorityConfirmed = false;
     _priorityResolve = null;
     if (_priorityTimerId) {
       clearInterval(_priorityTimerId);
@@ -2524,8 +2560,6 @@
       // Stealth minions that just entered can't be blocked
       if (Engine.getKw(att, 'stealth') && att.enteredThisTurn) continue;
       for (const def of defenders) {
-        // Flying restriction
-        if (Engine.getKw(att, 'flying') && !Engine.getKw(def, 'flying') && !Engine.getKw(def, 'reach')) continue;
         return true;  // Found at least one valid block
       }
     }
@@ -2586,7 +2620,6 @@
     if (blocker.tapped) return false;
     if (blocker.owner === attacker.owner) return false;
     if (Engine.getKw(attacker, 'stealth') && attacker.enteredThisTurn) return false;
-    if (Engine.getKw(attacker, 'flying') && !Engine.getKw(blocker, 'flying') && !Engine.getKw(blocker, 'reach')) return false;
     return true;
   }
 

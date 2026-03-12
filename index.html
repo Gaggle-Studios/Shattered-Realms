@@ -100,12 +100,13 @@
           <p><strong>Instant</strong> &mdash; A spell you can play at any time, including during your opponent's turn. Goes on the stack.</p>
           <p><strong>Sorcery</strong> &mdash; A spell you can only play during your own Action phase when the stack is empty.</p>
           <p><strong>Enchantment</strong> &mdash; A persistent effect that stays on the field, providing auras or triggered abilities. Exiled when destroyed.</p>
-          <p><strong>Upgrade</strong> &mdash; A permanent buff attached to a minion, granting stats and/or keywords. Exiled after being played.</p>
+          <p><strong>Upgrade</strong> &mdash; A permanent buff attached to a friendly minion, granting stats and/or keywords. Exiled after being played.</p>
+          <p><strong>Curse</strong> &mdash; A debuff that targets an enemy minion, stripping keywords and applying negative effects. Exiled after being played.</p>
         </div>
 
         <div class="rules-section">
           <h3>Combat</h3>
-          <p>Combat works very similarly to Magic: The Gathering. The active player taps minions as attackers, the defender assigns blockers, then damage resolves simultaneously. First Strike, Trample, Deathtouch, Flying, and other familiar keywords work as you'd expect.</p>
+          <p>Combat works very similarly to Magic: The Gathering. The active player taps minions as attackers, the defender assigns blockers, then damage resolves simultaneously. First Strike, Trample, Deathtouch, and other familiar keywords work as you'd expect.</p>
           <p><strong>Key differences from MTG:</strong></p>
           <ul>
             <li>Combat is not available on the very first turn of the game.</li>
@@ -243,11 +244,15 @@
       <!-- Priority Bar -->
       <div class="priority-bar hidden" id="priority-bar">
         <span class="priority-msg" id="priority-msg">Respond with an Instant?</span>
-        <div class="priority-timer-track">
+        <!-- Phase 1: YES / NO prompt -->
+        <button class="btn btn-priority-yes" id="btn-priority-yes">Yes</button>
+        <button class="btn btn-priority-no" id="btn-priority-no">No</button>
+        <!-- Phase 2: Timer + Pass (shown after YES) -->
+        <div class="priority-timer-track hidden" id="priority-timer-track">
           <div class="priority-timer-fill" id="priority-timer-fill"></div>
         </div>
-        <span class="priority-timer-text" id="priority-timer-text">15</span>
-        <button class="btn btn-priority-pass" id="btn-priority-pass">Pass</button>
+        <span class="priority-timer-text hidden" id="priority-timer-text">15</span>
+        <button class="btn btn-priority-pass hidden" id="btn-priority-pass">Pass</button>
       </div>
 
       <!-- PLAYER ENCHANTMENTS -->

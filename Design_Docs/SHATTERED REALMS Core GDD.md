@@ -167,7 +167,6 @@ The defending player assigns their untapped minions as blockers. Each blocker is
 
 **Blocking Restrictions:**
 
-- Minions with **Flying** can only be blocked by minions with Flying or Reach.
 - Minions with **Menace** can only be blocked by two or more minions.
 - Minions with **Stealth** cannot be blocked the turn they enter the battlefield.
 - Minions with **Taunt** must be blocked if the defending player has any eligible untapped minions (at least one blocker must be assigned to each Taunt minion before any other attacker can be left unblocked).
@@ -276,8 +275,6 @@ Several card effects interact with the shop:
 | **Vigilance** | This minion does not tap when declared as an attacker. |
 | **Haste** | This minion can attack and use tap abilities the turn it enters the battlefield. |
 | **Deathtouch** | Any amount of combat damage this minion deals to another minion is lethal. |
-| **Flying** | This minion can only be blocked by minions with Flying or Reach. |
-| **Reach** | This minion can block minions with Flying. |
 | **Menace** | This minion can only be blocked by two or more minions. |
 
 ### Defensive Keywords
@@ -453,8 +450,8 @@ Several card effects interact with the shop:
 **Strengths:** Disruption, card advantage, alternate win condition, strong instant-speed interaction, excellent shop manipulation.
 **Weaknesses:** Low minion stats, poor combat trades, struggles when behind on board, must carefully balance mana between interaction and Insight generation.
 
-**Win Condition (Primary — Alternate):** Accumulate 50 Insight by conserving mana and controlling the board. Can also win through combat with evasive Flying minions if the opponent overcommits to stopping Insight.
-**Win Condition (Secondary):** Chip away with evasive minions while maintaining board control.
+**Win Condition (Primary — Alternate):** Accumulate 50 Insight by conserving mana and controlling the board. Can also win through combat with well-protected Ward/Hexproof minions if the opponent overcommits to stopping Insight.
+**Win Condition (Secondary):** Chip away with resilient minions while maintaining board control.
 
 #### Starter Deck (10 Cards)
 
@@ -463,7 +460,7 @@ Several card effects interact with the shop:
 | Name | Cost | ATK/HP | Keywords/Effects |
 |------|------|--------|-----------------|
 | Arcane Familiar | 2 | 1/3 | Surge: Gain +1/+0 until end of turn. |
-| Cloudwisp | 1 | 1/1 | Flying. Battlecry: Scout 1. |
+| Cloudwisp | 1 | 1/2 | Battlecry: Scout 1. |
 | Rune Scholar | 3 | 1/4 | Ward 1. Inspire: Gain 1 Insight. |
 | Spellweaver Initiate | 2 | 2/2 | Surge: Draw a card (once per turn). |
 | Frost Sentinel | 3 | 0/5 | Defender. Battlecry: Freeze target enemy minion. |

@@ -1231,6 +1231,7 @@ html, body {
 .type-sorcery    { color: #cc88ff; }
 .type-enchantment{ color: #88ccff; }
 .type-upgrade    { color: #ffaacc; }
+.type-curse      { color: #cc4444; }
 .card-keywords { display: flex; flex-direction: column; gap: 2px; font-size: 16px; }
 .kw-line {
   display: flex;
@@ -1652,6 +1653,40 @@ html, body {
   transition: background 0.15s, transform 0.1s;
 }
 .btn-priority-pass:hover {
+  background: linear-gradient(135deg, #ff7070, #dd4444);
+  transform: scale(1.05);
+}
+.btn-priority-yes {
+  padding: 6px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #5cff7c, #33cc55);
+  color: #111;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: background 0.15s, transform 0.1s;
+}
+.btn-priority-yes:hover {
+  background: linear-gradient(135deg, #70ff90, #44dd66);
+  transform: scale(1.05);
+}
+.btn-priority-no {
+  padding: 6px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ff5c5c, #cc3333);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: background 0.15s, transform 0.1s;
+}
+.btn-priority-no:hover {
   background: linear-gradient(135deg, #ff7070, #dd4444);
   transform: scale(1.05);
 }
