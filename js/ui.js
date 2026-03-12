@@ -3027,10 +3027,8 @@
   ───────────────────────────────────────────────────────────────── */
   function initMenu() {
     const btnSP = $('btn-singleplayer');
-    const btnMP = $('btn-multiplayer');
     const btnHTP = $('btn-how-to-play');
     if (btnSP) btnSP.addEventListener('click', () => startHeroSelect('singleplayer'));
-    if (btnMP) btnMP.addEventListener('click', () => startHeroSelect('multiplayer'));
     if (btnHTP) btnHTP.addEventListener('click', () => switchScreen('how-to-play'));
 
     const btnRulesBack = $('btn-rules-back');
